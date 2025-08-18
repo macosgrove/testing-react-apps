@@ -3,19 +3,20 @@
 
 import * as React from 'react'
 // 🐨 add `screen` to the import here:
-import {render, fireEvent} from '@testing-library/react'
+import {screen, render, fireEvent} from '@testing-library/react'
 import Counter from '../../components/counter'
 
 test('counter increments and decrements when the buttons are clicked', () => {
-  const {getByRole, getByText} = render(<Counter />)
+  render(<Counter />)
   // 🐨 replace these with screen queries
   // 💰 you can use `getByText` for each of these (`getByRole` can work for the button too)
-  const decrement = getByRole('button', {name: 'Decrement'})
-  const increment = getByRole('button', {name: 'Increment'})
+  const decrement = screen.getByRole('button', {name: /decrement/i})
+  const increment = screen.getByRole('button', {name: /increment/i})
+  const message = screen.getByText(/current count/i)
 
-  expect(getByText('Current count: 0')).toBeInTheDocument()
+  expect(message).toHaveTextContent('Current count: 0')
   fireEvent.click(increment)
-  expect(getByText('Current count: 1')).toBeInTheDocument()
+  expect(message).toHaveTextContent('Current count: 1')
   fireEvent.click(decrement)
-  expect(getByText('Current count: 0')).toBeInTheDocument()
+  expect(message).toHaveTextContent('Current count: 0')
 })
