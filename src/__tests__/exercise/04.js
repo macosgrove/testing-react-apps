@@ -6,6 +6,7 @@ import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Login from '../../components/login'
 import faker from 'faker'
+import {build, fake} from '@jackfranklin/test-data-bot'
 
 const buildLoginForm = (overrides) => {
   return {
@@ -15,10 +16,17 @@ const buildLoginForm = (overrides) => {
   }
 }
 
+const formBuilder = build({
+  fields: {
+    username: fake(f => f.internet.userName()),
+    password: fake(f => f.internet.password())
+  }
+})
+
 test('submitting the form calls onSubmit with username and password', async() => {
   const handleSubmit = jest.fn()
   render(<Login onSubmit={handleSubmit} />)
-  const {username, password} = buildLoginForm()
+  const {username, password} = formBuilder()
   const userNameField = screen.getByLabelText("Username")
   expect(userNameField).toBeInTheDocument()
   const passwordField = screen.getByLabelText("Password")
@@ -35,7 +43,11 @@ test('submitting the form calls onSubmit with username and password', async() =>
 test('password override', async() => {
   const handleSubmit = jest.fn()
   render(<Login onSubmit={handleSubmit} />)
-  const {username, password} = buildLoginForm({password: "thisPasswordFulfillsStrengthCriteria"})
+  const {username, password} = formBuilder({
+    overrides: {
+      password: 'thisPasswordFulfillsStrengthCriteria',
+    },
+  })
   const userNameField = screen.getByLabelText("Username")
   expect(userNameField).toBeInTheDocument()
   const passwordField = screen.getByLabelText("Password")
