@@ -9,6 +9,7 @@ import {build, fake} from '@jackfranklin/test-data-bot'
 import Login from '../../components/login-submission'
 import {setupServer} from 'msw/node'
 import {handlers} from '../../test/server-handlers'
+import {rest} from 'msw'
 
 const buildLoginForm = build({
   fields: {
@@ -24,7 +25,7 @@ const server = setupServer(
 )
 
 beforeAll(() => server.listen())
-// afterEach(() => server.resetHandlers())
+afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 test(`logging in displays the user's username`, async () => {
@@ -66,3 +67,25 @@ test(`an error message is displayed if password is omitted`, async () => {
     `"password required"`,
   )
 })
+
+test(`an error message is displayed if the server fails`, async () => {
+  server.use(
+    rest.post(
+      // note that it's the same URL as our app-wide handler
+      // so this will override the other.
+      'https://auth-provider.example.com/api/login',
+      async (req, res, ctx) => {
+        return res(ctx.status(500), ctx.json({message: 'Oh no, something went wrong!'}))
+      },
+    ),
+  )
+  render(<Login />)
+
+  await userEvent.type(screen.getByLabelText(/username/i), username)
+  await userEvent.type(screen.getByLabelText(/password/i), password)
+  await userEvent.click(screen.getByRole('button', {name: /submit/i}))
+  await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
+  await expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+    `"Oh no, something went wrong!"`,
+  )
+});
