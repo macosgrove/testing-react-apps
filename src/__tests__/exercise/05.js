@@ -51,7 +51,9 @@ test(`an error message is displayed if username is omitted`, async () => {
   await userEvent.type(screen.getByLabelText(/password/i), password)
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
-  await expect(screen.getByRole('alert')).toHaveTextContent('username required')
+  await expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+    `"username required"`,
+  )
 })
 
 test(`an error message is displayed if password is omitted`, async () => {
@@ -60,5 +62,7 @@ test(`an error message is displayed if password is omitted`, async () => {
   await userEvent.type(screen.getByLabelText(/username/i), username)
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
-  await expect(screen.getByRole('alert')).toHaveTextContent('password required')
+  await expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+    `"password required"`,
+  )
 })
