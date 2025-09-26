@@ -33,7 +33,6 @@ test(`logging in displays the user's username`, async () => {
 
   await userEvent.type(screen.getByLabelText(/username/i), username)
   await userEvent.type(screen.getByLabelText(/password/i), password)
-  // 🐨 uncomment this and you'll start making the request!
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
 
   // as soon as the user hits submit, we render a spinner to the screen. That
@@ -46,4 +45,22 @@ test(`logging in displays the user's username`, async () => {
   // we render the username.
   // 🐨 assert that the username is on the screen
   await expect(screen.getByText(username)).toBeInTheDocument()
+})
+
+test(`an error message is displayed if username is omitted`, async () => {
+  render(<Login />)
+
+  await userEvent.type(screen.getByLabelText(/password/i), password)
+  await userEvent.click(screen.getByRole('button', {name: /submit/i}))
+  await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
+  await expect(screen.getByText('username required')).toBeInTheDocument()
+})
+
+test(`an error message is displayed if password is omitted`, async () => {
+  render(<Login />)
+
+  await userEvent.type(screen.getByLabelText(/username/i), username)
+  await userEvent.click(screen.getByRole('button', {name: /submit/i}))
+  await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
+  await expect(screen.getByText('password required')).toBeInTheDocument()
 })
