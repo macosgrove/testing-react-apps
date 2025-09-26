@@ -8,7 +8,6 @@ import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
 import Login from '../../components/login-submission'
 import {setupServer} from 'msw/node'
-import {rest} from 'msw'
 import {handlers} from '../../test/server-handlers'
 
 const buildLoginForm = build({
@@ -43,8 +42,7 @@ test(`logging in displays the user's username`, async () => {
 
   // once the login is successful, then the loading spinner disappears and
   // we render the username.
-  // 🐨 assert that the username is on the screen
-  await expect(screen.getByText(username)).toBeInTheDocument()
+  expect(screen.getByText(username)).toBeInTheDocument()
 })
 
 test(`an error message is displayed if username is omitted`, async () => {
@@ -53,7 +51,7 @@ test(`an error message is displayed if username is omitted`, async () => {
   await userEvent.type(screen.getByLabelText(/password/i), password)
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
-  await expect(screen.getByText('username required')).toBeInTheDocument()
+  await expect(screen.getByRole('alert')).toHaveTextContent('username required')
 })
 
 test(`an error message is displayed if password is omitted`, async () => {
@@ -62,5 +60,5 @@ test(`an error message is displayed if password is omitted`, async () => {
   await userEvent.type(screen.getByLabelText(/username/i), username)
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
-  await expect(screen.getByText('password required')).toBeInTheDocument()
+  await expect(screen.getByRole('alert')).toHaveTextContent('password required')
 })
