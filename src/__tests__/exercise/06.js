@@ -79,7 +79,7 @@ test('displays errors that may be returned', async () => {
   })
   expect(screen.queryByLabelText("loading...")).not.toBeInTheDocument()
   // 🐨 verify the latitude and longitude appear correctly
-  expect(screen.getByText("Something went wrong")).toBeInTheDocument()
+  expect(screen.getByRole('alert')).toHaveTextContent("Something went wrong")
 })
 
 /*
