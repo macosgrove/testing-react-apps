@@ -2,51 +2,50 @@
 // http://localhost:3000/counter-hook
 
 import * as React from 'react'
-import {render, screen, act} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {act, render} from '@testing-library/react'
 import useCounter from '../../components/use-counter'
 
-let result={}
-function TestComponent(props) {
-  Object.assign(result, useCounter(props))
-  return null
-}
-
 function setup(props) {
-  render(<TestComponent {...props}/>)
+  const result = {}
+  function TestComponent() {
+    result.current = useCounter(props)
+    return null
+  }
+  render(<TestComponent />)
+  return result
 }
 
 test('exposes the count and increment/decrement functions', () => {
-  setup()
-  expect(result.count).toEqual(0)
-  act(()=> result.increment())
-  expect(result.count).toEqual(1)
-  act(()=> result.decrement())
-  expect(result.count).toEqual(0)
-  act(()=> result.decrement())
-  expect(result.count).toEqual(-1)
+  const result = setup()
+  expect(result.current.count).toEqual(0)
+  act(()=> result.current.increment())
+  expect(result.current.count).toEqual(1)
+  act(()=> result.current.decrement())
+  expect(result.current.count).toEqual(0)
+  act(()=> result.current.decrement())
+  expect(result.current.count).toEqual(-1)
 })
 
 test('allows customization of the initial count', () => {
-  setup({ initialCount: 10})
-  expect(result.count).toEqual(10)
-  act(()=> result.increment())
-  expect(result.count).toEqual(11)
-  act(()=> result.decrement())
-  expect(result.count).toEqual(10)
-  act(()=> result.decrement())
-  expect(result.count).toEqual(9)
+  const result = setup({ initialCount: 10})
+  expect(result.current.count).toEqual(10)
+  act(()=> result.current.increment())
+  expect(result.current.count).toEqual(11)
+  act(()=> result.current.decrement())
+  expect(result.current.count).toEqual(10)
+  act(()=> result.current.decrement())
+  expect(result.current.count).toEqual(9)
 })
 
 test('allows customization of the step', () => {
-  setup({ step: 2})
-  expect(result.count).toEqual(0)
-  act(()=> result.increment())
-  expect(result.count).toEqual(2)
-  act(()=> result.decrement())
-  expect(result.count).toEqual(0)
-  act(()=> result.decrement())
-  expect(result.count).toEqual(-2)
+  const result = setup({ step: 2})
+  expect(result.current.count).toEqual(0)
+  act(()=> result.current.increment())
+  expect(result.current.count).toEqual(2)
+  act(()=> result.current.decrement())
+  expect(result.current.count).toEqual(0)
+  act(()=> result.current.decrement())
+  expect(result.current.count).toEqual(-2)
 })
 
 /* eslint no-unused-vars:0 */
